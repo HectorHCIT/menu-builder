@@ -1,0 +1,522 @@
+---
+---
+
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+  <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Constructor de Menús</h1>
+  
+  <!-- Navigation Steps -->
+  <div class="flex justify-center mb-8">
+    <div class="flex space-x-4 bg-white rounded-lg p-2 shadow-sm">
+      <button data-step="1" class="step-btn px-4 py-2 rounded-md font-medium transition-colors bg-primary text-white">
+        1. Categorías
+      </button>
+      <button data-step="2" class="step-btn px-4 py-2 rounded-md font-medium transition-colors text-gray-600 hover:text-primary">
+        2. Productos
+      </button>
+      <button data-step="3" class="step-btn px-4 py-2 rounded-md font-medium transition-colors text-gray-600 hover:text-primary">
+        3. Modificadores
+      </button>
+      <button data-step="4" class="step-btn px-4 py-2 rounded-md font-medium transition-colors text-gray-600 hover:text-primary">
+        4. Vista Previa
+      </button>
+      <button data-step="5" class="step-btn px-4 py-2 rounded-md font-medium transition-colors text-gray-600 hover:text-primary">
+        5. Exportar JSON
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 1: Categories -->
+  <div id="step-1" class="step-content">
+    <!-- Instrucciones para las categorías -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">Sobre las Categorías</h2>
+      <p class="text-gray-600 mb-4">Las categorías te permiten organizar tus productos de manera lógica, facilitando a los clientes encontrar lo que buscan.</p>
+      
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+        <h3 class="font-semibold text-blue-700">Ejemplos de categorías:</h3>
+        <ul class="list-disc ml-5 mt-2 text-gray-600">
+          <li><strong>Restaurante:</strong> Entradas, Platos Principales, Postres, Bebidas</li>
+          <li><strong>Café:</strong> Café Caliente, Café Frío, Pasteles, Snacks</li>
+          <li><strong>Tienda:</strong> Electrónicos, Ropa, Accesorios, Hogar</li>
+        </ul>
+      </div>
+      
+      <p class="text-sm text-gray-600">Organiza tu menú en categorías claras y descriptivas. Una buena estructura mejora la experiencia de compra.</p>
+    </div>
+    
+    <!-- Formulario de Categorías -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">Agregar Categoría</h2>
+      <div class="flex gap-4 items-center justify-center">
+        <div class="flex-1">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Nombre de la Categoría <span class="text-red-500">*</span></label>
+          <input 
+            type="text" 
+            id="category-name" 
+            placeholder="Ej: Bebidas, Comidas, Postres" 
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          >
+          <p class="text-xs text-gray-500 mt-1">Elige nombres concisos y descriptivos</p>
+        </div>
+        <button id="add-category-btn" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-red-600 transition-colors font-medium">
+          Agregar Categoría
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <h3 class="text-lg font-semibold mb-4 text-gray-800">Categorías Creadas</h3>
+      <p class="text-sm text-gray-600 mb-4">Aquí puedes ver todas las categorías que has creado para tu menú. Al eliminar una categoría, también se eliminarán todos los productos asociados a ella.</p>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Nombre</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="categories-table">
+            <tr>
+              <td colspan="2" class="text-center py-8 text-gray-500">No hay categorías creadas</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Products -->
+  <div id="step-2" class="step-content hidden">
+    <!-- Instrucciones para los productos -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">Sobre los Productos</h2>
+      <p class="text-gray-600 mb-4">Los productos son los elementos que venderás a tus clientes. Cada producto debe pertenecer a una categoría y tener información clara y atractiva.</p>
+      
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+        <h3 class="font-semibold text-blue-700">Consejos para crear buenos productos:</h3>
+        <ul class="list-disc ml-5 mt-2 text-gray-600">
+          <li><strong>Nombre claro:</strong> Usa nombres descriptivos y fáciles de entender</li>
+          <li><strong>Descripción detallada:</strong> Incluye ingredientes, características especiales o alergenos</li>
+          <li><strong>Imagen atractiva:</strong> Las imágenes de alta calidad aumentan las ventas</li>
+          <li><strong>Precio correcto:</strong> Establece un precio competitivo y rentable</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Formulario de Productos -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">Agregar Producto</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Categoría <span class="text-red-500">*</span></label>
+            <select id="product-category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+              <option value="">Seleccionar categoría</option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">Primero debes crear categorías en el paso anterior</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del Producto <span class="text-red-500">*</span></label>
+            <input 
+              type="text" 
+              id="product-name" 
+              placeholder="Ej: Hamburguesa Clásica" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+            <p class="text-xs text-gray-500 mt-1">Nombre claro y descriptivo del producto</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Descripción <span class="text-red-500">*</span></label>
+            <textarea 
+              id="product-description" 
+              placeholder="Descripción del producto" 
+              rows="3"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            ></textarea>
+            <p class="text-xs text-gray-500 mt-1">Incluye ingredientes y detalles importantes</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Precio (Lempiras) <span class="text-red-500">*</span></label>
+            <input 
+              type="number" 
+              id="product-price" 
+              placeholder="100" 
+              step="0.01" 
+              min="0"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+            <p class="text-xs text-gray-500 mt-1">Precio base sin modificadores</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">URL de Imagen</label>
+            <input 
+              type="url" 
+              id="product-image" 
+              placeholder="https://ejemplo.com/imagen.jpg" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+            <p class="text-xs text-gray-500 mt-1">Enlace a una imagen (recomendado pero opcional)</p>
+          </div>
+          <button id="add-product-btn" class="w-full px-6 py-2 bg-primary text-white rounded-md hover:bg-red-600 transition-colors font-medium">
+            Agregar Producto
+          </button>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Vista Previa de Imagen</label>
+          <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+            <img id="image-preview" src="" alt="Vista previa" class="max-w-full h-48 object-cover mx-auto rounded hidden">
+            <div id="image-placeholder" class="text-gray-500">
+              <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <p class="mt-2">Vista previa de imagen</p>
+              <p class="text-xs mt-1 text-gray-400">Se mostrará aquí cuando ingreses la URL</p>
+            </div>
+          </div>
+          <div class="mt-4 p-4 bg-yellow-50 rounded-md border border-yellow-100">
+            <h4 class="font-medium text-yellow-800 text-sm">Recomendaciones para imágenes:</h4>
+            <ul class="mt-1 text-xs text-yellow-700 list-disc pl-4 space-y-1">
+              <li>Usa imágenes cuadradas o con relación 4:3</li>
+              <li>Imágenes con fondo claro o transparente</li>
+              <li>Resolución mínima recomendada: 500x500px</li>
+              <li>Formatos: JPG, PNG o WebP</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <h3 class="text-lg font-semibold mb-4 text-gray-800">Productos Creados</h3>
+      <p class="text-sm text-gray-600 mb-4">Aquí puedes ver todos los productos que has creado. Al eliminar un producto, también se eliminarán todos sus modificadores asociados.</p>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Categoría</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Nombre</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Descripción</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Precio</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Imagen</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="products-table">
+            <tr>
+              <td colspan="6" class="text-center py-8 text-gray-500">No hay productos creados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Modifiers -->
+  <div id="step-3" class="step-content hidden">
+    <!-- Instrucciones para los modificadores -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">¿Qué son los Modificadores?</h2>
+      <p class="text-gray-600 mb-4">Los modificadores son opciones adicionales que se pueden agregar a un producto, como tamaños, extras, o personalizaciones.</p>
+      
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+        <h3 class="font-semibold text-blue-700">Ejemplos de modificadores:</h3>
+        <ul class="list-disc ml-5 mt-2 text-gray-600">
+          <li><strong>Tamaño de bebida</strong> (modificador único): Pequeño, Mediano, Grande (el cliente solo puede elegir uno)</li>
+          <li><strong>Toppings de pizza</strong> (modificador múltiple): Queso extra, Jamón, Piña (el cliente puede elegir varios)</li>
+        </ul>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 mb-2">
+        <div class="border rounded-md p-3 bg-gray-50">
+          <span class="font-medium block mb-1 text-gray-700">Mínimo/Máximo:</span>
+          <p>Define cuántas opciones puede seleccionar el cliente.</p>
+          <p class="mt-1"><strong>Ejemplo:</strong> Min=1, Max=1 (debe elegir exactamente una opción)</p>
+        </div>
+        <div class="border rounded-md p-3 bg-gray-50">
+          <span class="font-medium block mb-1 text-gray-700">Tipo de modificador:</span>
+          <p><strong>Único (1):</strong> El cliente solo puede elegir una opción</p>
+          <p><strong>Múltiple (2):</strong> El cliente puede elegir varias opciones</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de Modificadores -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">Agregar Modificador</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Producto <span class="text-red-500">*</span></label>
+            <select id="modifier-product" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+              <option value="">Seleccionar producto</option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">Selecciona el producto al que se aplicará este modificador</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del Modificador <span class="text-red-500">*</span></label>
+            <input 
+              type="text" 
+              id="modifier-name" 
+              placeholder="Ej: Tamaño, Ingredientes Extra" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+            <p class="text-xs text-gray-500 mt-1">Nombre descriptivo para el grupo de opciones</p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Mínimo <span class="text-red-500">*</span></label>
+              <input 
+                type="number" 
+                id="modifier-min" 
+                value="0" 
+                min="0"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+              <p class="text-xs text-gray-500 mt-1">Cantidad mínima a elegir</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Máximo <span class="text-red-500">*</span></label>
+              <input 
+                type="number" 
+                id="modifier-max" 
+                value="1" 
+                min="1"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+              <p class="text-xs text-gray-500 mt-1">Cantidad máxima a elegir</p>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Tipo <span class="text-red-500">*</span></label>
+            <div class="flex space-x-4">
+              <label class="flex items-center">
+                <input type="radio" name="modifier-type" value="1" checked class="text-primary focus:ring-primary">
+                <span class="ml-2">Único (1)</span>
+              </label>
+              <label class="flex items-center">
+                <input type="radio" name="modifier-type" value="2" class="text-primary focus:ring-primary">
+                <span class="ml-2">Múltiple (2)</span>
+              </label>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Único: solo una opción, Múltiple: varias opciones</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Posición</label>
+            <input 
+              type="number" 
+              id="modifier-position" 
+              value="1" 
+              min="1"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+            <p class="text-xs text-gray-500 mt-1">Orden en que aparecerá este modificador</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-gray-800">Opciones del Modificador</h3>
+          <p class="text-sm text-gray-600 mb-2">Agrega las opciones que el cliente podrá seleccionar</p>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Etiqueta <span class="text-red-500">*</span></label>
+              <input 
+                type="text" 
+                id="option-label" 
+                placeholder="Ej: Grande, Queso Extra" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Valor (Lempiras)</label>
+              <input 
+                type="number" 
+                id="option-value" 
+                placeholder="0" 
+                step="0.01" 
+                min="0"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+            </div>
+          </div>
+          <button id="add-option-btn" class="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors font-medium">
+            Agregar Opción
+          </button>
+          
+          <div class="border rounded-lg p-4 max-h-48 overflow-y-auto">
+            <h4 class="font-medium text-gray-700 mb-2">Opciones Agregadas</h4>
+            <div id="options-list" class="space-y-2">
+              <p class="text-gray-500 text-sm">No hay opciones agregadas</p>
+            </div>
+          </div>
+          
+          <button id="save-modifier-btn" class="w-full px-6 py-2 bg-primary text-white rounded-md hover:bg-red-600 transition-colors font-medium">
+            Guardar Modificador
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <h3 class="text-lg font-semibold mb-4 text-gray-800">Modificadores Creados</h3>
+      <p class="text-sm text-gray-600 mb-4">Aquí puedes ver todos los modificadores que has creado para tus productos</p>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Producto</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Modificador</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Min/Max</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Tipo</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Opciones</th>
+              <th class="text-left py-3 px-4 font-medium text-gray-700">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="modifiers-table">
+            <tr>
+              <td colspan="6" class="text-center py-8 text-gray-500">No hay modificadores creados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: Preview -->
+  <div id="step-4" class="step-content hidden">
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">Vista Previa del Menú</h2>
+      <p class="text-gray-600 mb-4">Esta es una vista previa de cómo se estructuran tus datos. Puedes revisar que todo esté correcto antes de exportar.</p>
+      
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+        <h3 class="font-semibold text-blue-700">Consejos para revisar tu menú:</h3>
+        <ul class="list-disc ml-5 mt-2 text-gray-600">
+          <li>Verifica que todas las categorías tengan productos</li>
+          <li>Confirma que los productos tengan los precios correctos</li>
+          <li>Revisa que los modificadores estén correctamente configurados</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">Estructura del Menú</h2>
+      <div id="preview-content" class="space-y-4">
+        <p class="text-gray-500 text-center py-8">No hay datos para mostrar</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 5: Export JSON -->
+  <div id="step-5" class="step-content hidden">
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">Exportar e Importar tu Menú</h2>
+      <p class="text-gray-600 mb-4">Tu menú está listo para ser exportado en formato JSON. Este formato es compatible con diferentes sistemas y aplicaciones.</p>
+      
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+        <h3 class="font-semibold text-blue-700">¿Qué hacer con el JSON?</h3>
+        <ul class="list-disc ml-5 mt-2 text-gray-600">
+          <li><strong>Copiar al portapapeles:</strong> Para pegar en tu aplicación o sistema</li>
+          <li><strong>Descargar como archivo:</strong> Para guardar una copia de seguridad</li>
+          <li><strong>Importar JSON:</strong> Cargar un menú previamente exportado</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Opciones</h2>
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <button id="copy-json-btn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-red-600 transition-colors font-medium flex items-center justify-center text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+              Copiar JSON
+            </button>
+            <button id="download-json-btn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors font-medium flex items-center justify-center text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Descargar JSON
+            </button>
+          </div>
+          
+          <div class="border rounded-md p-4 mt-4">
+            <h3 class="text-md font-semibold mb-2 text-gray-800">Importar JSON</h3>
+            <div class="flex flex-col space-y-2">
+              <textarea 
+                id="import-json" 
+                rows="4" 
+                placeholder='Pega aquí tu JSON {"menu": [...]}' 
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              ></textarea>
+              <button id="import-json-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium flex items-center justify-center text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                </svg>
+                Importar JSON
+              </button>
+            </div>
+          </div>
+          
+          <div class="border-t my-4 pt-4">
+            <button id="clear-data-btn" class="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium flex items-center justify-center text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Limpiar todos los datos
+            </button>
+            <p class="text-xs text-red-500 mt-1 text-center">¡Precaución! Esta acción eliminará todos tus datos</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800">JSON Generado</h3>
+        <p class="text-sm text-gray-600 mb-4">Este es el JSON que representa tu menú completo. Incluye todas las categorías, productos y modificadores.</p>
+        <pre id="json-output" class="bg-gray-100 p-4 rounded-md text-sm overflow-auto max-h-96 border">
+{`{
+  "menu": []
+}`}
+        </pre>
+        <p class="text-xs text-gray-500 mt-2">El JSON mostrado es compatible con la mayoría de los sistemas de menú digital.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed top-4 right-4 bg-[#fb0021] text-white px-6 py-3 rounded-md shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+  <span id="toast-message">Mensaje</span>
+</div>
+
+  
+<script src="../scripts/menuBuilder.js"></script>
+
+<style>
+  .primary {
+    color: #FB0021;
+  }
+  
+  .bg-primary {
+    background-color: #FB0021;
+  }
+  
+  .border-primary {
+    border-color: #FB0021;
+  }
+  
+  .ring-primary {
+    --tw-ring-color: #FB0021;
+  }
+  
+  .text-primary {
+    color: #FB0021;
+  }
+  
+  .hover\:text-primary:hover {
+    color: #FB0021;
+  }
+  
+  .hover\:bg-red-600:hover {
+    background-color: #dc2626;
+  }
+</style>
