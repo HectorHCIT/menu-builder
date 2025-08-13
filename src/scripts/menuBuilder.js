@@ -147,6 +147,13 @@ export class MenuBuilder {
     if (stepNumber === 4) this.updatePreview();
     if (stepNumber === 5) this.updateJSONOutput();
   }
+  
+  /**
+   * Alias para showStep para mayor claridad semántica
+   */
+  goToStep(stepNumber) {
+    this.showStep(stepNumber);
+  }
 
   // ========== CATEGORY FUNCTIONS ==========
 
@@ -202,12 +209,20 @@ export class MenuBuilder {
               ''}
           </td>
           <td class="py-3 px-4">
-            <button onclick="menuBuilder.deleteCategory(${category.id})" class="text-red-600 hover:text-red-800 font-medium flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              Eliminar
-            </button>
+            <div class="flex space-x-3">
+              <button onclick="menuBuilder.editCategory(${category.id})" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 0L11.828 15.1l-2.12.636.636-2.12L19.414 5.414z" />
+                </svg>
+                Editar
+              </button>
+              <button onclick="menuBuilder.deleteCategory(${category.id})" class="text-red-600 hover:text-red-800 font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Eliminar
+              </button>
+            </div>
           </td>
         </tr>
       `;
@@ -226,6 +241,97 @@ export class MenuBuilder {
     this.updateModifiersTable();
     this.saveToLocalStorage();
     this.showToast('Categoría eliminada');
+  }
+  
+  /**
+   * Edita una categoría
+   */
+  editCategory(id) {
+    const category = this.categories.find(cat => cat.id === id);
+    if (!category) return;
+    
+    // Rellenar el formulario con los datos actuales
+    const categoryNameInput = document.getElementById('category-name');
+    const addCategoryBtn = document.getElementById('add-category-btn');
+    
+    if (!categoryNameInput || !addCategoryBtn) return;
+    
+    // Cambiar el formulario a modo edición
+    categoryNameInput.value = category.name;
+    const originalBtnText = addCategoryBtn.textContent;
+    addCategoryBtn.textContent = 'Actualizar Categoría';
+    addCategoryBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+    addCategoryBtn.classList.remove('bg-primary', 'hover:bg-red-600');
+    
+    // Scroll al formulario
+    categoryNameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    categoryNameInput.focus();
+    
+    // Guardar la función original del botón
+    const originalOnClick = addCategoryBtn.onclick;
+    
+    // Cambiar la función del botón para actualizar en lugar de agregar
+    addCategoryBtn.onclick = () => {
+      const newName = categoryNameInput.value.trim();
+      
+      if (newName === '') {
+        this.showToast('El nombre de la categoría no puede estar vacío', 'error');
+        return;
+      }
+      
+      // Verificamos si ya existe otra categoría con ese nombre
+      if (this.categories.some(cat => cat.id !== id && cat.name.toLowerCase() === newName.toLowerCase())) {
+        this.showToast('Ya existe una categoría con ese nombre', 'error');
+        return;
+      }
+      
+      // Actualizamos el nombre
+      category.name = newName;
+      
+      // Actualizamos la tabla y guardamos
+      this.updateCategoriesTable();
+      this.updateCategoryOptions();
+      this.saveToLocalStorage();
+      this.showToast('Categoría actualizada exitosamente');
+      
+      // Restaurar el formulario a su estado original
+      categoryNameInput.value = '';
+      addCategoryBtn.textContent = originalBtnText;
+      addCategoryBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+      addCategoryBtn.classList.add('bg-primary', 'hover:bg-red-600');
+      
+      // Restaurar la función original del botón
+      addCategoryBtn.onclick = originalOnClick;
+      
+      // Eliminar el botón de cancelar si existe
+      if (document.getElementById('cancel-edit-btn')) {
+        document.getElementById('cancel-edit-btn').remove();
+      }
+    };
+    
+    // Agregar un botón de cancelar si no existe
+    if (!document.getElementById('cancel-edit-btn')) {
+      const cancelBtn = document.createElement('button');
+      cancelBtn.id = 'cancel-edit-btn';
+      cancelBtn.className = 'px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors font-medium ml-4';
+      cancelBtn.textContent = 'Cancelar';
+      cancelBtn.onclick = () => {
+        // Restaurar el formulario a su estado original
+        categoryNameInput.value = '';
+        addCategoryBtn.textContent = originalBtnText;
+        addCategoryBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        addCategoryBtn.classList.add('bg-primary', 'hover:bg-red-600');
+        
+        // Restaurar la función original del botón
+        addCategoryBtn.onclick = originalOnClick;
+        
+        // Eliminar el botón de cancelar
+        cancelBtn.remove();
+      };
+      
+      // Agregar el botón de cancelar junto al botón de actualizar
+      addCategoryBtn.parentNode.appendChild(cancelBtn);
+    }
   }
 
   // ========== PRODUCT FUNCTIONS ==========
@@ -358,12 +464,20 @@ export class MenuBuilder {
               '<span class="text-xs text-gray-500 italic">Sin imagen</span>'}
           </td>
           <td class="py-3 px-4">
-            <button onclick="menuBuilder.deleteProduct(${product.id})" class="text-red-600 hover:text-red-800 font-medium flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              Eliminar
-            </button>
+            <div class="flex space-x-3">
+              <button onclick="menuBuilder.editProduct(${product.id})" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 0L11.828 15.1l-2.12.636.636-2.12L19.414 5.414z" />
+                </svg>
+                Editar
+              </button>
+              <button onclick="menuBuilder.deleteProduct(${product.id})" class="text-red-600 hover:text-red-800 font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Eliminar
+              </button>
+            </div>
           </td>
         </tr>
       `;
@@ -380,6 +494,150 @@ export class MenuBuilder {
     this.updateModifiersTable();
     this.saveToLocalStorage();
     this.showToast('Producto eliminado');
+  }
+
+  /**
+   * Edita un producto existente
+   * @param {number} id - ID del producto a editar
+   */
+  editProduct(id) {
+    const product = this.products.find(p => p.id === id);
+    if (!product) return;
+    
+    // Obtener referencias a los elementos del formulario
+    const categorySelect = document.getElementById('product-category');
+    const nameInput = document.getElementById('product-name');
+    const descInput = document.getElementById('product-description');
+    const priceInput = document.getElementById('product-price');
+    const imageInput = document.getElementById('product-image');
+    const addButton = document.getElementById('add-product-btn');
+    
+    if (!categorySelect || !nameInput || !descInput || !priceInput || !imageInput || !addButton) return;
+    
+    // Cambiar a Step 2 (productos)
+    this.goToStep(2);
+    
+    // Rellenar el formulario con los datos actuales
+    categorySelect.value = product.categoryId;
+    nameInput.value = product.name;
+    descInput.value = product.description;
+    priceInput.value = product.price;
+    imageInput.value = product.image || '';
+    
+    // Cambiar el texto del botón y su estilo
+    const originalBtnText = addButton.textContent;
+    addButton.textContent = 'Actualizar Producto';
+    addButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+    addButton.classList.remove('bg-primary', 'hover:bg-red-600');
+    
+    // Hacer scroll al formulario
+    nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    nameInput.focus();
+    
+    // Guardar la función original del botón
+    const originalOnClick = addButton.onclick;
+    
+    // Cambiar la función del botón para actualizar en lugar de agregar
+    addButton.onclick = () => {
+      // Validar los datos
+      const categoryId = parseInt(categorySelect.value);
+      const name = nameInput.value.trim();
+      const description = descInput.value.trim();
+      const price = parseFloat(priceInput.value);
+      const image = imageInput.value.trim() || null;
+      
+      if (!categoryId) {
+        this.showToast('Por favor selecciona una categoría', 'error');
+        return;
+      }
+      
+      if (!name) {
+        this.showToast('El nombre del producto no puede estar vacío', 'error');
+        return;
+      }
+      
+      if (!description) {
+        this.showToast('La descripción del producto no puede estar vacía', 'error');
+        return;
+      }
+      
+      if (isNaN(price) || price <= 0) {
+        this.showToast('Por favor ingresa un precio válido mayor a cero', 'error');
+        return;
+      }
+      
+      // Verificar duplicados (en la misma categoría)
+      const duplicateProduct = this.products.find(p => 
+        p.id !== id && 
+        p.name.toLowerCase() === name.toLowerCase() && 
+        p.categoryId === categoryId
+      );
+      
+      if (duplicateProduct) {
+        this.showToast(`Ya existe un producto llamado "${name}" en esta categoría`, 'error');
+        return;
+      }
+      
+      // Actualizar el producto
+      product.categoryId = categoryId;
+      product.name = name;
+      product.description = description;
+      product.price = price;
+      product.image = image;
+      
+      // Actualizar la interfaz
+      this.updateProductsTable();
+      this.updateModifierProductDropdown();
+      this.renderPreview();
+      this.saveToLocalStorage();
+      this.showToast('Producto actualizado correctamente');
+      
+      // Restaurar el formulario a su estado original
+      categorySelect.value = '';
+      nameInput.value = '';
+      descInput.value = '';
+      priceInput.value = '';
+      imageInput.value = '';
+      addButton.textContent = originalBtnText;
+      addButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+      addButton.classList.add('bg-primary', 'hover:bg-red-600');
+      
+      // Restaurar la función original del botón
+      addButton.onclick = originalOnClick;
+      
+      // Eliminar el botón de cancelar si existe
+      if (document.getElementById('cancel-edit-product-btn')) {
+        document.getElementById('cancel-edit-product-btn').remove();
+      }
+    };
+    
+    // Agregar un botón de cancelar si no existe
+    if (!document.getElementById('cancel-edit-product-btn')) {
+      const cancelBtn = document.createElement('button');
+      cancelBtn.id = 'cancel-edit-product-btn';
+      cancelBtn.className = 'w-full px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors font-medium mt-4';
+      cancelBtn.textContent = 'Cancelar Edición';
+      cancelBtn.onclick = () => {
+        // Restaurar el formulario a su estado original
+        categorySelect.value = '';
+        nameInput.value = '';
+        descInput.value = '';
+        priceInput.value = '';
+        imageInput.value = '';
+        addButton.textContent = originalBtnText;
+        addButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        addButton.classList.add('bg-primary', 'hover:bg-red-600');
+        
+        // Restaurar la función original del botón
+        addButton.onclick = originalOnClick;
+        
+        // Eliminar el botón de cancelar
+        cancelBtn.remove();
+      };
+      
+      // Agregar el botón de cancelar debajo del botón de actualizar
+      addButton.parentNode.appendChild(cancelBtn);
+    }
   }
 
   // ========== MODIFIER FUNCTIONS ==========
@@ -566,9 +824,20 @@ export class MenuBuilder {
             </div>
           </td>
           <td class="py-3 px-4">
-            <button onclick="menuBuilder.deleteModifier(${modifier.id})" class="text-red-600 hover:text-red-800 font-medium">
-              Eliminar
-            </button>
+            <div class="flex space-x-3">
+              <button onclick="menuBuilder.editModifier(${modifier.id})" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 0L11.828 15.1l-2.12.636.636-2.12L19.414 5.414z" />
+                </svg>
+                Editar
+              </button>
+              <button onclick="menuBuilder.deleteModifier(${modifier.id})" class="text-red-600 hover:text-red-800 font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Eliminar
+              </button>
+            </div>
           </td>
         </tr>
       `;
@@ -585,20 +854,185 @@ export class MenuBuilder {
     this.showToast('Modificador eliminado');
   }
 
+  /**
+   * Edita un modificador existente
+   * @param {number} id - ID del modificador a editar
+   */
+  editModifier(id) {
+    const modifier = this.modifiers.find(m => m.id === id);
+    if (!modifier) return;
+    
+    // Obtener referencias a los elementos del formulario
+    const productSelect = document.getElementById('modifier-product');
+    const nameInput = document.getElementById('modifier-name');
+    const minInput = document.getElementById('modifier-min');
+    const maxInput = document.getElementById('modifier-max');
+    const typeInputs = document.querySelectorAll('input[name="modifier-type"]');
+    const positionInput = document.getElementById('modifier-position');
+    const addButton = document.getElementById('save-modifier-btn');
+    
+    if (!productSelect || !nameInput || !minInput || !maxInput || !typeInputs.length || !positionInput || !addButton) return;
+    
+    // Cambiar a Step 3 (modificadores)
+    this.goToStep(3);
+    
+    // Rellenar el formulario con los datos actuales
+    productSelect.value = modifier.productId;
+    nameInput.value = modifier.name;
+    minInput.value = modifier.min;
+    maxInput.value = modifier.max;
+    positionInput.value = modifier.position;
+    
+    // Seleccionar el tipo correcto (único o múltiple)
+    typeInputs.forEach(input => {
+      if (parseInt(input.value) === modifier.type) {
+        input.checked = true;
+      }
+    });
+    
+    // Cargar las opciones actuales en this.currentOptions
+    this.currentOptions = [...modifier.options];
+    this.updateOptionsList();
+    
+    // Cambiar el texto del botón y su estilo
+    const originalBtnText = addButton.textContent;
+    addButton.textContent = 'Actualizar Modificador';
+    addButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+    addButton.classList.remove('bg-primary', 'hover:bg-red-600');
+    
+    // Hacer scroll al formulario
+    nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    nameInput.focus();
+    
+    // Guardar la función original del botón
+    const originalOnClick = addButton.onclick;
+    
+    // Cambiar la función del botón para actualizar en lugar de agregar
+    addButton.onclick = () => {
+      // Validar los datos
+      const productId = parseInt(productSelect.value);
+      const name = nameInput.value.trim();
+      const min = parseInt(minInput.value);
+      const max = parseInt(maxInput.value);
+      const type = parseInt(document.querySelector('input[name="modifier-type"]:checked')?.value);
+      const position = parseInt(positionInput.value);
+      
+      if (!productId) {
+        this.showToast('Por favor selecciona un producto', 'error');
+        return;
+      }
+      
+      if (!name) {
+        this.showToast('Por favor ingresa un nombre para el modificador', 'error');
+        return;
+      }
+      
+      if (min > max) {
+        this.showToast('El mínimo no puede ser mayor que el máximo', 'error');
+        return;
+      }
+      
+      if (this.currentOptions.length === 0) {
+        this.showToast('Por favor agrega al menos una opción', 'error');
+        return;
+      }
+      
+      // Actualizar el modificador
+      modifier.productId = productId;
+      modifier.name = name;
+      modifier.min = min;
+      modifier.max = max;
+      modifier.type = type;
+      modifier.position = position;
+      modifier.options = [...this.currentOptions];
+      
+      // Actualizar la interfaz
+      this.updateModifiersTable();
+      this.renderPreview();
+      this.saveToLocalStorage();
+      this.showToast('Modificador actualizado correctamente');
+      
+      // Restaurar el formulario a su estado original
+      productSelect.value = '';
+      nameInput.value = '';
+      minInput.value = 0;
+      maxInput.value = 1;
+      positionInput.value = 0;
+      typeInputs[0].checked = true; // Seleccionar tipo único por defecto
+      
+      // Limpiar las opciones actuales
+      this.currentOptions = [];
+      this.updateOptionsList();
+      
+      addButton.textContent = originalBtnText;
+      addButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+      addButton.classList.add('bg-primary', 'hover:bg-red-600');
+      
+      // Restaurar la función original del botón
+      addButton.onclick = originalOnClick;
+      
+      // Eliminar el botón de cancelar si existe
+      if (document.getElementById('cancel-edit-modifier-btn')) {
+        document.getElementById('cancel-edit-modifier-btn').remove();
+      }
+    };
+    
+    // Agregar un botón de cancelar si no existe
+    if (!document.getElementById('cancel-edit-modifier-btn')) {
+      const cancelBtn = document.createElement('button');
+      cancelBtn.id = 'cancel-edit-modifier-btn';
+      cancelBtn.className = 'w-full px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors font-medium mt-4';
+      cancelBtn.textContent = 'Cancelar Edición';
+      cancelBtn.onclick = () => {
+        // Restaurar el formulario a su estado original
+        productSelect.value = '';
+        nameInput.value = '';
+        minInput.value = 0;
+        maxInput.value = 1;
+        positionInput.value = 0;
+        typeInputs[0].checked = true; // Seleccionar tipo único por defecto
+        
+        // Limpiar las opciones actuales
+        this.currentOptions = [];
+        this.updateOptionsList();
+        
+        addButton.textContent = originalBtnText;
+        addButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        addButton.classList.add('bg-primary', 'hover:bg-red-600');
+        
+        // Restaurar la función original del botón
+        addButton.onclick = originalOnClick;
+        
+        // Eliminar el botón de cancelar
+        cancelBtn.remove();
+      };
+      
+      // Agregar el botón de cancelar debajo del botón de actualizar
+      addButton.parentNode.appendChild(cancelBtn);
+    }
+  }
+
   // ========== PREVIEW FUNCTIONS ==========
 
   /**
    * Actualiza la vista previa
    */
+  /**
+   * Actualiza la vista previa
+   */
   updatePreview() {
     const container = document.getElementById('preview-content');
-    if (!container) return;
+    const categoriesNav = document.getElementById('categories-nav');
+    
+    if (!container || !categoriesNav) return;
     
     if (this.categories.length === 0) {
+      categoriesNav.innerHTML = '';
       container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay datos para mostrar</p>';
       return;
     }
     
+    // Preparar datos agrupados por categoría
     const groupedData = this.categories.map(category => {
       const categoryProducts = this.products.filter(prod => prod.categoryId === category.id);
       return {
@@ -611,62 +1045,89 @@ export class MenuBuilder {
     }).filter(group => group.products.length > 0);
     
     if (groupedData.length === 0) {
+      categoriesNav.innerHTML = '';
       container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay productos para mostrar</p>';
       return;
     }
     
-    container.innerHTML = groupedData.map(group => `
-      <div class="border rounded-lg overflow-hidden">
-        <button onclick="menuBuilder.toggleCategory('category-${group.category.id}')" 
-                class="w-full bg-gray-100 px-4 py-3 text-left font-semibold text-gray-800 hover:bg-gray-200 transition-colors flex justify-between items-center">
-          <span>${group.category.name} (${group.products.length} productos)</span>
-          <svg class="w-5 h-5 transform transition-transform" id="icon-category-${group.category.id}">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-        <div id="category-${group.category.id}" class="hidden">
+    // Crear la botonera de categorías
+    const categoriesButtons = groupedData.map((group, index) => 
+      `<button 
+        id="btn-category-${group.category.id}" 
+        onclick="menuBuilder.showCategory('${group.category.id}')" 
+        class="category-btn px-4 py-2 rounded-md font-medium whitespace-nowrap ${index === 0 ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+        data-category-id="${group.category.id}">
+        ${group.category.name} (${group.products.length})
+      </button>`
+    ).join('');
+    
+    categoriesNav.innerHTML = `<div class="flex space-x-2">${categoriesButtons}</div>`;
+    
+    // Generar los contenedores de productos para cada categoría
+    const productsContainers = groupedData.map(group => 
+      `<div 
+        id="category-content-${group.category.id}" 
+        class="category-content ${group.category.id !== groupedData[0].category.id ? 'hidden' : ''}"
+      >
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">${group.category.name}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           ${group.products.map(product => `
-            <div class="border-t p-4">
-              <div class="flex justify-between items-start mb-2">
-                <div class="flex-1">
-                  <h4 class="font-semibold text-gray-800">${product.name}</h4>
-                  <p class="text-gray-600 text-sm">${product.description}</p>
-                  <p class="font-semibold text-primary mt-1">L. ${product.price.toFixed(2)}</p>
-                </div>
-                ${product.image ? `<img src="${product.image}" alt="${product.name}" class="w-16 h-16 object-cover rounded ml-4">` : ''}
-              </div>
-              ${product.modifiers.length > 0 ? `
-                <div class="mt-3 pl-4 border-l-2 border-gray-200">
-                  <h5 class="font-medium text-gray-700 mb-2">Modificadores:</h5>
-                  ${product.modifiers.map(modifier => `
-                    <div class="mb-2">
-                      <p class="text-sm font-medium text-gray-600">
-                        ${modifier.name} (${modifier.min}-${modifier.max}, ${modifier.type === 1 ? 'Único' : 'Múltiple'})
-                      </p>
-                      <div class="ml-4 text-sm text-gray-500">
-                        ${modifier.options.map(opt => `${opt.label}: L. ${opt.value.toFixed(2)}`).join(', ')}
-                      </div>
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden flex border border-gray-100">
+              ${product.image ? 
+                `<div class="w-1/3 max-w-[120px]">
+                  <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
+                </div>` : ''
+              }
+              <div class="p-4 flex-1">
+                <h4 class="font-semibold text-gray-800 text-lg">${product.name}</h4>
+                <p class="text-gray-600 text-sm my-1">${product.description}</p>
+                <p class="font-semibold text-primary text-base">L. ${product.price.toFixed(2)}</p>
+                
+                ${product.modifiers.length > 0 ? `
+                  <div class="mt-2 pt-2 border-t border-gray-100">
+                    <div class="flex flex-wrap gap-1">
+                      ${product.modifiers.map(modifier => 
+                        `<span class="inline-block bg-gray-100 text-xs px-2 py-1 rounded-full text-gray-700">
+                          ${modifier.name}
+                        </span>`
+                      ).join('')}
                     </div>
-                  `).join('')}
-                </div>
-              ` : ''}
+                  </div>
+                ` : ''}
+              </div>
             </div>
           `).join('')}
         </div>
-      </div>
-    `).join('');
-  }
-
-  /**
-   * Toggle de categoría en la vista previa
-   */
-  toggleCategory(categoryId) {
-    const element = document.getElementById(categoryId);
-    const icon = document.getElementById(`icon-${categoryId}`);
+      </div>`
+    ).join('');
     
-    if (element && icon) {
-      element.classList.toggle('hidden');
-      icon.style.transform = element.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+    container.innerHTML = productsContainers;
+  }
+  
+  /**
+   * Muestra los productos de una categoría específica
+   */
+  showCategory(categoryId) {
+    // Ocultar todos los contenidos de categorías
+    document.querySelectorAll('.category-content').forEach(content => {
+      content.classList.add('hidden');
+    });
+    
+    // Restablecer estilos de todos los botones
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.className = 'category-btn px-4 py-2 rounded-md font-medium whitespace-nowrap bg-gray-100 text-gray-700 hover:bg-gray-200';
+    });
+    
+    // Mostrar el contenido de la categoría seleccionada
+    const selectedContent = document.getElementById(`category-content-${categoryId}`);
+    if (selectedContent) {
+      selectedContent.classList.remove('hidden');
+    }
+    
+    // Resaltar el botón seleccionado
+    const selectedBtn = document.getElementById(`btn-category-${categoryId}`);
+    if (selectedBtn) {
+      selectedBtn.className = 'category-btn px-4 py-2 rounded-md font-medium whitespace-nowrap bg-primary text-white';
     }
   }
 
